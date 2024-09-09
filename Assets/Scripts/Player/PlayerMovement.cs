@@ -1,16 +1,13 @@
+using System.Collections;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    const int BLOCK_SIZE = 1;
-
-    public float moveSpeed = 5f; // 좌우 이동 속도
-    public float climbSpeed = 5f; // 계단 오르내리는 속도
+    private const float MOVEPSPEED = 3;
 
     private Rigidbody2D rb;
     private Vector2 movement;
-    [SerializeField]
-    private bool isClimbing = false;
+
     [SerializeField]
     private bool isMovable = false;
 
@@ -23,32 +20,31 @@ public class PlayerMovement : MonoBehaviour
     {
         // 플레이어 입력 감지 (A, D 키)
         movement.x = Input.GetAxisRaw("Horizontal");
-        if (isClimbing)
-        {
-            movement.y = Input.GetAxisRaw("Horizontal");
-        }
     }
 
     void FixedUpdate()
     {
-        if (isClimbing)
-        {
-            // 계단을 오르내릴 때의 움직임 처리
-            rb.velocity = new Vector2(movement.x * moveSpeed, rb.velocity.y*climbSpeed);
-        }
-        else
-        {
-            // 일반적인 좌우 움직임 처리
-            rb.velocity = new Vector2(movement.x * moveSpeed, rb.velocity.y);
-        }
+        // 일반적인 좌우 움직임 처리
+        rb.velocity = new Vector2(movement.x * MOVEPSPEED, rb.velocity.y);
     }
 
-    // 계단에 접촉했을 때
-    private void OnTriggerEnter2D(Collider2D collision)
+    public void MovePlayer2Target(Transform targetPosition)
     {
-        if (collision.CompareTag("Stairs"))
+        StartCoroutine(Move2Target(targetPosition));
+    }
+
+    private IEnumerator Move2Target(Transform targetPosition)
+    {
+        //목표로부터 0.1 이하로 좁혀지거나, 키보드 조작이 있기 전까지 반복
+        while (Mathf.Abs(transform.position.x - targetPosition.position.x) > 0.1f 
+            && movement.x == 0)
         {
-            isClimbing = !isClimbing;
+            // 플레이어를 타겟의 x 좌표 방향으로 이동시킵니다. 
+            transform.position = Vector3.MoveTowards(transform.position,
+                new Vector3(targetPosition.position.x, transform.position.y, transform.position.z),
+                Time.deltaTime * MOVEPSPEED);
+
+            yield return null;
         }
     }
 }

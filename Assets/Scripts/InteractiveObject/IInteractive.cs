@@ -4,7 +4,7 @@ using UnityEngine;
 
 public interface IInteractive
 {
-    abstract void Interact(GameObject player);
+    abstract void Interactive(GameObject player);
 
     bool IsInteractive { get; set; }
 }

@@ -4,20 +4,14 @@ using UnityEngine;
 
 public class InteractiveSample : InteractiveObject
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
+    protected override void AdjustEvents()
     {
-        
-    }
-
-    public override void Interact(GameObject player)
-    {
-        base.Interact(player);
+        InteractiveEvent interactiveEvent = new("name", "description");
+        interactiveEvent.eventContent += () =>
+        {
+            Debug.Log("test");
+        };
+        InteractiveEvents.Add(interactiveEvent);
     }
 }

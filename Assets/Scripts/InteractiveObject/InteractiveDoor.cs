@@ -2,34 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InteractiveDoor : MonoBehaviour, IInteractive
-{
-    private bool isInteractive = false;
-
+public class InteractiveDoor : InteractiveObject
+{ 
     public Transform doorNext;
 
-    public bool IsInteractive { get => isInteractive; set => isInteractive = value; }
-
-    public void Interact(GameObject player)
+    protected override void AdjustEvents()
     {
-        player.transform.position = doorNext.transform.position;
-        Debug.Log("door");
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Player"))
+        InteractiveEvent interactiveEvent = new("Leave", "description");
+        interactiveEvent.eventContent += () =>
         {
-            Debug.Log("Active");
-            isInteractive = true;
-        }
+            Player.Instance.transform.position = doorNext.transform.position;
+        };
+        InteractiveEvents.Add(interactiveEvent);
     }
 
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Player"))
-        {
-            isInteractive = false;
-        }
-    }
+    
 }

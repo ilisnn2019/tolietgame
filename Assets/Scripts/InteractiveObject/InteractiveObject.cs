@@ -5,28 +5,43 @@ using UnityEngine;
 
 public abstract class InteractiveObject : MonoBehaviour, IInteractive
 {
+    [HideInInspector]
     public List<InteractiveEvent> InteractiveEvents;
+
+    [HideInInspector]
+    public List<string> event_name = new();
+
+    [HideInInspector]
+    public List<string> event_description = new();
 
     private bool isInteractive = false;
     public bool IsInteractive { get => isInteractive; set => isInteractive = value; }
 
-    public virtual void Interact(GameObject player)
+
+    public void Start()
+    {
+        AdjustEvents();
+    }
+
+    //클릭시, 불러오는 함수
+    public void Interactive(GameObject player)
     {
         Debug.Log(InteractiveEvents.Count);
         UIEventGroup.ActiveEventBoxes(InteractiveEvents);
     }
 
+    //용도 미정
     public void UpdateEvents()
     {
-        InteractiveEvents.Clear();
-
         AdjustEvents();
+        InteractiveEvents.Clear();
     }
 
-
-    protected void AdjustEvents()
-    {
-        /*
+    /// <summary>
+    /// 선택가능한 이벤트 정의
+    /// 해당 함수를 오버라이딩 시, 이벤트를 추가해야 함.
+    /// </summary>
+            /*
          * 이벤트 추가는 다음과 같은 포멧으로 추가
          * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
         
@@ -39,38 +54,55 @@ public abstract class InteractiveObject : MonoBehaviour, IInteractive
 
         * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
         */
+    protected abstract void AdjustEvents();
 
-        InteractiveEvent interactiveEvent = new(gameObject.name, "description");
-        interactiveEvent.eventContent += () =>
-        {
-            Debug.Log("test");
-        };
-        InteractiveEvents.Add(interactiveEvent);
-    }
-
-    protected void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
         {
             Debug.Log("Active");
-            isInteractive = true;
+            TriggerEnterEvent(collision);
         }
     }
 
-    protected void OnTriggerExit2D(Collider2D collision)
+    protected virtual void TriggerEnterEvent(Collider2D collision)
+    {
+        isInteractive = true;
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
-        {
-            isInteractive = false;
-            UIEventGroup.DisactiveEventBoxes();
+        {          
+            TriggerExitEvent(collision);
         }
+    }
+
+    protected virtual void TriggerExitEvent(Collider2D collision)
+    {
+        isInteractive = false;
+        UIEventGroup.DisactiveEventBoxes();
+    }
+
+    public void AddTemporaryEvent()
+    {
+        event_name.Clear();
+        event_description.Clear();
+
+        AdjustEvents();
+        for (int i = 0; i < InteractiveEvents.Count; i++)
+        {
+            event_name.Add(InteractiveEvents[i].name);
+            event_description.Add(InteractiveEvents[i].eventDescription);
+        }
+        InteractiveEvents.Clear();
     }
 }
 
 [CanEditMultipleObjects]
-[CustomEditor(typeof(InteractiveObject), true)] // 'true' applies the editor to derived classes too
+[CustomEditor(typeof(InteractiveObject), true)]
 public class InteractiveObjectEditor : Editor
-{
+{ 
     public override void OnInspectorGUI()
     {
         // 기본 인스펙터 그리기
@@ -79,10 +111,20 @@ public class InteractiveObjectEditor : Editor
         // InteractiveObject 참조 가져오기
         InteractiveObject myScript = (InteractiveObject)target;
 
-        // 버튼 만들기
-        if (GUILayout.Button("Add Event to List"))
+        // '이벤트 추가' 버튼
+        if (GUILayout.Button("Refresh Event to List"))
         {
-            myScript.UpdateEvents();
+            myScript.AddTemporaryEvent();
         }
+
+        EditorGUILayout.LabelField("Added Events:");
+        for (int i = 0; i < myScript.event_name.Count; i++)
+        {
+            EditorGUILayout.LabelField($"Event {i + 1}:");
+            EditorGUILayout.TextField("Name", myScript.event_name[i]);
+            EditorGUILayout.TextField("Description", myScript.event_description[i]);
+        }
+
     }
 }
+
