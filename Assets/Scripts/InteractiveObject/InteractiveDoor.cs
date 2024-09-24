@@ -6,7 +6,13 @@ public class InteractiveDoor : InteractiveObject
 { 
     public Transform doorNext;
 
-    protected override void AdjustEvents()
+    public override void Start()
+    {
+        base.Start();
+        ShowAvailable += DoorOpenEvent;
+    }
+
+    protected void DoorOpenEvent()
     {
         InteractiveEvent interactiveEvent = new("Leave", "description");
         interactiveEvent.eventContent += () =>

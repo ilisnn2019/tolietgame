@@ -17,14 +17,23 @@ public abstract class InteractiveObject : MonoBehaviour, IInteractive
     private bool isInteractive = false;
     public bool IsInteractive { get => isInteractive; set => isInteractive = value; }
 
+    public delegate void showAvailableEvent();
+    public showAvailableEvent ShowAvailable;
 
-    public void Start()
+    public virtual void InitEvent()
     {
-        AdjustEvents();
+        ShowAvailable = null;
+        ShowAvailable += PrimaryEvent;
+    }
+
+    public virtual void Start()
+    {
+        InitEvent(); // Adjust Events
+        ShowAvailable(); // Add Events
     }
 
     //클릭시, 불러오는 함수
-    public void Interactive(GameObject player)
+    public virtual void Interactive(GameObject player)
     {
         Debug.Log(InteractiveEvents.Count);
         UIEventGroup.ActiveEventBoxes(InteractiveEvents);
@@ -33,28 +42,38 @@ public abstract class InteractiveObject : MonoBehaviour, IInteractive
     //용도 미정
     public void UpdateEvents()
     {
-        AdjustEvents();
         InteractiveEvents.Clear();
     }
+
 
     /// <summary>
     /// 선택가능한 이벤트 정의
     /// 해당 함수를 오버라이딩 시, 이벤트를 추가해야 함.
     /// </summary>
-            /*
-         * 이벤트 추가는 다음과 같은 포멧으로 추가
-         * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-        
+    /*
+        * 이벤트 추가는 다음과 같은 포멧으로 추가
+        * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+
         InteractiveEvent interactiveEvent = new("name", "description");
         interactiveEvent.eventContent += () =>
         {
-            Debug.Log("test");
+        Debug.Log("test");
         };
-        interactiveEvents.Add(interactiveEvent);
+        InteractiveEvents.Add(interactiveEvent);
 
         * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
         */
-    protected abstract void AdjustEvents();
+
+    void PrimaryEvent()
+    {
+        InteractiveEvent interactiveEvent = new("primary Event", "description");
+        interactiveEvent.eventContent += () =>
+        {
+            //Function that explain the status of the selected object.
+        };
+        InteractiveEvents.Add(interactiveEvent);
+        Debug.Log("Add");
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -89,7 +108,9 @@ public abstract class InteractiveObject : MonoBehaviour, IInteractive
         event_name.Clear();
         event_description.Clear();
 
-        AdjustEvents();
+        Start();
+        ShowAvailable();
+
         for (int i = 0; i < InteractiveEvents.Count; i++)
         {
             event_name.Add(InteractiveEvents[i].name);

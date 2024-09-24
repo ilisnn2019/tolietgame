@@ -29,4 +29,25 @@ public class Player : MonoBehaviour
         pm.MovePlayer2Target(targetPosition);
     }
 
+    public static void ChangePlayerHealth(float deltha)
+    {
+        ps.ChangeHealth(deltha);
+    }
+
+    public static void ChangePlayerStemina(float deltha)
+    {
+        ps.ChangeStemina(deltha);
+    }
+    public static void ChangePlayerHunger(float deltha)
+    {
+        ps.ChangeHunger(deltha);
+    }
+    public static void ChangePlayerThirsty(float deltha)
+    {
+        ps.ChangeThirsty(deltha);
+    }
+    public static void ChangePlayerMental(float deltha)
+    {
+        ps.ChangeMental(deltha);
+    }
 }
