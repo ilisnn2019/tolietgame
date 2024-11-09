@@ -2,30 +2,36 @@ using UnityEngine;
 
 public class RoullettModule
 {
+    const int TEN_THOUSAND = 1000;
     //성공 확률
     //실패시, 0.01%씩 증가
-    public float SuccessRate;
+    public int SuccessRate;
 
     //실패시, 증가량
-    public float IncreaseRate;
+    public int IncreaseRate;
+
+    public int durability;
 
     public RoullettModule()
     {
-        SuccessRate = 0.0001f;
-        IncreaseRate = 0.0001f;
+        SuccessRate = 1;
+        IncreaseRate = 1;
+        durability = 1;
     }
 
-    public RoullettModule(float sr, float ir)
+    public RoullettModule(int sr, int ir, int dr)
     {
         SuccessRate = sr;
         IncreaseRate = ir;
+        durability = dr;
     }
 
     public bool TrySuccess()
     {
-        if (Random.value < SuccessRate)
+        if (Random.value < (float)SuccessRate / TEN_THOUSAND)
         {
-            SuccessRate = 0.0001f;
+            SuccessRate = 1;
+            IncreaseRate *= 2;
             return true;
         }
         else
@@ -38,8 +44,8 @@ public class RoullettModule
     private void IncreaseSuccessRate()
     {
 
-        SuccessRate = Mathf.Min(SuccessRate + IncreaseRate, 1);
-        Debug.Log($"{SuccessRate}");
+        SuccessRate = Mathf.Max(SuccessRate + IncreaseRate, 1);
+        Debug.Log($"{SuccessRate / TEN_THOUSAND}");
 
     }
 }

@@ -16,6 +16,8 @@ public interface IDamaged
     /// Function for adjusting the event in IDamaged interface
     /// </summary>
     abstract void DamagedEvent();
+
+
 }
 
 

@@ -6,7 +6,7 @@ using UnityEngine;
 public abstract class InteractiveObject : MonoBehaviour, IInteractive
 {
     [HideInInspector]
-    public List<InteractiveEvent> InteractiveEvents;
+    public List<InteractiveEvent> InteractiveEvents = new();
 
     [HideInInspector]
     public List<string> event_name = new();
@@ -19,12 +19,6 @@ public abstract class InteractiveObject : MonoBehaviour, IInteractive
 
     public delegate void showAvailableEvent();
     public showAvailableEvent ShowAvailable;
-
-    public virtual void InitEvent()
-    {
-        ShowAvailable = null;
-        ShowAvailable += PrimaryEvent;
-    }
 
     public virtual void Start()
     {
@@ -64,15 +58,23 @@ public abstract class InteractiveObject : MonoBehaviour, IInteractive
         * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
         */
 
+    public virtual void InitEvent()
+    {
+        ShowAvailable = null;
+        ShowAvailable += PrimaryEvent;
+    }
+
     void PrimaryEvent()
     {
+        //기본 이벤트
+
+        //현재 오브젝트의 모습을 묘사
         InteractiveEvent interactiveEvent = new("primary Event", "description");
         interactiveEvent.eventContent += () =>
         {
             //Function that explain the status of the selected object.
         };
         InteractiveEvents.Add(interactiveEvent);
-        Debug.Log("Add");
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

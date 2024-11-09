@@ -4,34 +4,55 @@ using UnityEngine;
 
 public class PlayerStatus : MonoBehaviour
 {
-    private float Health;
+    public const float MAX_VITAL = 100;
+    public const float MAX_STEMINA = 100;
+
+    private float Vital;
     private float Stemina;
     private float Hunger;
     private float Thirsty;
     private float Mental;
 
-    public void ChangeHealth(float health)
+    private void Start()
     {
-        Health += health;
+        Vital = MAX_VITAL;
+        Stemina = MAX_STEMINA;
     }
 
-    public void ChangeStemina(float stemina)
+    /// <summary>
+    /// 바이탈 수치를 변경합니다.<br></br>
+    /// 변경 후에 전체 바이탈 비율을 반환합니다.
+    /// </summary>
+    /// <param name="vital">변경될 양</param>
+    /// <returns></returns>
+    /// 
+    public float ChangeVital(float vital)
+    {
+        Vital += vital;
+        return Vital / MAX_VITAL;
+    }
+
+    public float ChangeStemina(float stemina)
     {
         Stemina += stemina;
+        return Stemina / MAX_STEMINA;
     }
 
-    public void ChangeHunger(float hunger)
+    public float ChangeHunger(float hunger)
     {
         Hunger += hunger;
+        return Hunger;
     }
 
-    public void ChangeThirsty(float thirsty)
+    public float ChangeThirsty(float thirsty)
     {
         Thirsty += thirsty;
+        return Thirsty;
     }
 
-    public void ChangeMental(float mental)
+    public float ChangeMental(float mental)
     {
         Mental += mental;
+        return Mental;
     }
 }

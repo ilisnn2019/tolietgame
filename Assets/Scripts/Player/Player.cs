@@ -16,22 +16,30 @@ public class Player : MonoBehaviour
 
     public static PlayerStatus ps;
 
+    public static PlayerUI pu;
+
     private void Awake()
     {
         Instance = gameObject;
         pm = GetComponent<PlayerMovement>();
         pi = GetComponent<PlayerInteractive>();
         ps = GetComponent<PlayerStatus>();
+        pu = GetComponent<PlayerUI>();
     }
 
+    /// <summary>
+    /// 오브젝트 클릭시, 플레이어가 해당 오브젝트를 향해 이동
+    /// </summary>
+    /// <param name="targetPosition">오브젝트 위치</param>
     public static void Move2Target(Transform targetPosition)
     {
         pm.MovePlayer2Target(targetPosition);
     }
 
-    public static void ChangePlayerHealth(float deltha)
+    public static void ChangePlayerVital(float deltha)
     {
-        ps.ChangeHealth(deltha);
+        float currentVital = ps.ChangeVital(deltha);
+        pu.UpdateVitalSlider(currentVital);
     }
 
     public static void ChangePlayerStemina(float deltha)
